@@ -10,24 +10,32 @@ import (
 func commandMap(config *configStruct) error {
 	requestURL := ""
 	if config.Next == "" {
-		requestURL = "https://pokeapi.co/api/v2/location-area/"
+		requestURL = "https://pokeapi.co/api/v2/location-area/?offset=0&limit=20"
 	} else {
 		requestURL = config.Next
 	}
 
-	res, err := http.Get(requestURL)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
+	var body []byte
+	cachedData, ok := config.Cached.Get(requestURL)
+	if ok {
+		body = cachedData
+	} else {
+		res, err := http.Get(requestURL)
+		if err != nil {
+			return err
+		}
+		defer res.Body.Close()
 
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return err
+		body, err = io.ReadAll(res.Body)
+		if err != nil {
+			return err
+		}
+
+		config.Cached.Add(requestURL, body)
 	}
 
 	var data configStruct
-	err = json.Unmarshal(body, &data)
+	err := json.Unmarshal(body, &data)
 	if err != nil {
 		return err
 	}
@@ -35,8 +43,8 @@ func commandMap(config *configStruct) error {
 	config.Next = data.Next
 	config.Previous = data.Previous
 
-	for _, res := range data.Results {
-		fmt.Println(res.Name)
+	for _, area := range data.Results {
+		fmt.Println(area.Name)
 	}
 
 	return nil

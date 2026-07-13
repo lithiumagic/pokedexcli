@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/lithiumagic/pokedexcli/internal/pokecache"
 )
 
 func startRepl() {
 	scanner := bufio.NewScanner(os.Stdin) // when it runs it blocks and waits for input until user presses Enter
-	config := configStruct{}
+	config := configStruct{Cached: pokecache.NewCache(5 * time.Second)}
 	for {
 		fmt.Print("Pokedex > ")
 		scanner.Scan()
@@ -46,6 +49,7 @@ type configStruct struct {
 	Next     string         `json:"next"`
 	Previous string         `json:"previous"`
 	Results  []LocationArea `json:"results"`
+	Cached   *pokecache.Cache
 }
 
 type LocationArea struct {
