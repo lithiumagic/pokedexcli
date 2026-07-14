@@ -12,7 +12,10 @@ import (
 
 func startRepl() {
 	scanner := bufio.NewScanner(os.Stdin) // when it runs it blocks and waits for input until user presses Enter
-	config := configStruct{Cached: pokecache.NewCache(5 * time.Second)}
+	config := configStruct{
+		Cached:  pokecache.NewCache(5 * time.Second),
+		Pokedex: make(map[string]Pokemon),
+	}
 	for {
 		fmt.Print("Pokedex > ")
 		scanner.Scan()
@@ -51,6 +54,7 @@ type configStruct struct {
 	Previous string         `json:"previous"`
 	Results  []LocationArea `json:"results"`
 	Cached   *pokecache.Cache
+	Pokedex  map[string]Pokemon
 }
 
 type LocationArea struct {
@@ -90,6 +94,21 @@ func getCommands() map[string]cliCommand {
 			name:        "explore",
 			description: "displays a list of all the Pokémon located there",
 			callback:    commandExplore,
+		},
+		"catch": {
+			name:        "catch",
+			description: "attempts to catch chosen Pokémon located there",
+			callback:    commandCatch,
+		},
+		"inspect": {
+			name:        "inspect",
+			description: "inspects an already caught Pokémon",
+			callback:    commandInspect,
+		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "prints a list of all the names of the Pokemon the user has caught",
+			callback:    commandPokedex,
 		},
 	}
 }
