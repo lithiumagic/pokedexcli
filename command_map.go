@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func commandMap(config *configStruct) error {
+func commandMap(config *configStruct, args ...string) error {
 	requestURL := ""
 	if config.Next == "" {
 		requestURL = "https://pokeapi.co/api/v2/location-area/?offset=0&limit=20"

@@ -22,13 +22,14 @@ func startRepl() {
 			continue
 		}
 		commandName := words[0]
+		args := words[1:]
 
 		cmd, exists := getCommands()[commandName]
 		if !exists {
 			fmt.Println("Unknown command")
 			continue
 		} else {
-			err := cmd.callback(&config)
+			err := cmd.callback(&config, args...)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -60,7 +61,7 @@ type LocationArea struct {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*configStruct) error
+	callback    func(config *configStruct, args ...string) error
 }
 
 func getCommands() map[string]cliCommand {
@@ -84,6 +85,11 @@ func getCommands() map[string]cliCommand {
 			name:        "mapb",
 			description: "displays the names of previous 20 location areas in the Pokemon world",
 			callback:    commandMapb,
+		},
+		"explore": {
+			name:        "explore",
+			description: "displays a list of all the Pokémon located there",
+			callback:    commandExplore,
 		},
 	}
 }

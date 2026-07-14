@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func commandMapb(config *configStruct) error {
+func commandMapb(config *configStruct, args ...string) error {
 	requestURL := ""
 	if config.Previous == "" {
 		fmt.Println("you're on the first page")
